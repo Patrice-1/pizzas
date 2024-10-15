@@ -25,7 +25,7 @@ class RestaurantResource(Resource):
             restaurants = Restaurant.query.all()
             return make_response([restaurant.to_dict() for restaurant in restaurants], 200)
         else:
-            restaurant = Restaurant.query.get(id)
+            restaurant = db.session.get(Restaurant, id)  # Updated
             if restaurant:
                 restaurant_data = restaurant.to_dict()
                 # Fetch associated restaurant_pizzas
@@ -36,7 +36,7 @@ class RestaurantResource(Resource):
             return make_response({"error": "Restaurant not found"}, 404)
 
     def delete(self, id):
-        restaurant = Restaurant.query.get(id)
+        restaurant = db.session.get(Restaurant, id)  # Updated
         if restaurant:
             db.session.delete(restaurant)
             db.session.commit()
@@ -72,8 +72,6 @@ class RestaurantPizzaResource(Resource):
             return make_response(restaurant_pizza.to_dict(), 201)
         except ValueError as e:
             return make_response({"errors": [str(e)]}, 400)
-
-
 
 # Register resources with their respective routes
 api.add_resource(RestaurantResource, '/restaurants', '/restaurants/<int:id>')
